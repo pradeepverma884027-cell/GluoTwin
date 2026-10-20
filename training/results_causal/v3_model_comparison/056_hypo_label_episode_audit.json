@@ -1,0 +1,64 @@
+{
+  "audit": "GlucoTwin v3 hypoglycemia label and episode audit",
+  "read_only": true,
+  "label_definition_reconstructed": "target_hypo_60 = 1 if the minimum of the next 4 grid CGM values at +15, +30, +45, +60 minutes is below 70 mg/dL; otherwise 0.",
+  "hypoglycemia_threshold_mg_dl": 70.0,
+  "model_rows": 91921,
+  "raw_source_slot_rows": 96713,
+  "complete_future_windows": 91921,
+  "incomplete_future_windows": 0,
+  "stored_vs_reconstructed_label_mismatches": 0,
+  "focus_patients": [
+    "T2DM_2077",
+    "T2DM_2072",
+    "T2DM_2078"
+  ],
+  "focus_patient_summary": [
+    {
+      "patient_uid": "T2DM_2072",
+      "model_rows": 1169,
+      "positive_labels": 51,
+      "label_prevalence": 0.04362703165098375,
+      "complete_future_windows": 1169,
+      "label_mismatches": 0,
+      "mean_future_min_cgm": 108.58819503849445,
+      "p05_future_min_cgm": 70.2,
+      "min_future_min_cgm": 59.4
+    },
+    {
+      "patient_uid": "T2DM_2077",
+      "model_rows": 965,
+      "positive_labels": 738,
+      "label_prevalence": 0.7647668393782383,
+      "complete_future_windows": 965,
+      "label_mismatches": 0,
+      "mean_future_min_cgm": 60.58632124352332,
+      "p05_future_min_cgm": 39.6,
+      "min_future_min_cgm": 39.6
+    },
+    {
+      "patient_uid": "T2DM_2078",
+      "model_rows": 2557,
+      "positive_labels": 4,
+      "label_prevalence": 0.001564333202972233,
+      "complete_future_windows": 2557,
+      "label_mismatches": 0,
+      "mean_future_min_cgm": 111.04247164646071,
+      "p05_future_min_cgm": 79.2,
+      "min_future_min_cgm": 66.6
+    }
+  ],
+  "limitations": [
+    "This reconstructs the label from the dataset's grid CGM values; it does not validate clinical event definitions.",
+    "A positive target means at least one of four future grid readings is below 70 mg/dL, not necessarily a sustained episode.",
+    "A sequence of positive target labels can overlap the same low-CGM event and should not be counted as independent events.",
+    "Patient-specific prevalence may reflect real differences, data collection patterns, sensor artifacts, or cohort composition; this audit alone cannot distinguish them.",
+    "No model was trained and no source dataset or model was modified."
+  ],
+  "outputs": {
+    "patient_summary_csv": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\056_hypo_label_patient_summary.csv",
+    "focus_episodes_csv": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\056_hypo_label_episodes_focus_patients.csv",
+    "label_mismatches_csv": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\056_hypo_label_mismatches.csv",
+    "json_report": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\056_hypo_label_episode_audit.json"
+  }
+}

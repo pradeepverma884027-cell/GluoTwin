@@ -1,0 +1,7 @@
+pandas
+numpy
+scikit-learn
+joblib
+lightgbm
+xgboost
+# PyTorch is optional and is only needed for a separate GRU/LSTM model.

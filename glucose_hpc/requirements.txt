@@ -1,0 +1,7 @@
+pandas>=2.2   # tested with 3.0.2
+numpy
+scikit-learn
+joblib
+lightgbm
+xgboost
+# torch   # only for train_gru.py; install the build matching your cluster CUDA (pytorch.org)

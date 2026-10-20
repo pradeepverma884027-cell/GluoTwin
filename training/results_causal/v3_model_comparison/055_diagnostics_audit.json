@@ -1,0 +1,30 @@
+{
+  "audit": "055_prediction_error_and_calibration_diagnostics",
+  "read_only": true,
+  "target": "target_hypo_60",
+  "threshold_exploratory_not_clinical": 0.2,
+  "focus_patients": [
+    "T2DM_2072",
+    "T2DM_2095",
+    "T2DM_2078",
+    "T2DM_2077"
+  ],
+  "test_rows": 16644,
+  "test_patients": 12,
+  "features_count": 33,
+  "outputs": {
+    "patient_calibration": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\055_patient_calibration_diagnostics.csv",
+    "focus_errors": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\055_focus_patient_error_summary.csv",
+    "monthly_segments": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\055_monthly_error_segments.csv",
+    "feature_distributions": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\055_focus_feature_distributions.csv",
+    "probability_bins": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\055_probability_bin_calibration.csv",
+    "metadata": "C:\\Users\\pradeep\\Desktop\\gluotwinv2\\dataset_from_beginning\\DATASET\\training\\results_causal\\v3_model_comparison\\055_diagnostics_audit.json"
+  },
+  "limitations": [
+    "Retrospective descriptive diagnostics only; not clinical validation.",
+    "Threshold 0.20 is exploratory and not a clinical recommendation.",
+    "Monthly groups may be small and may not represent independent samples.",
+    "Feature distribution differences do not establish causation.",
+    "Probability bins summarize calibration coarsely; they are not a full calibration study."
+  ]
+}

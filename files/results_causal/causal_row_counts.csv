@@ -1,0 +1,5 @@
+horizon_minutes,history_filter_steps,eligible_rows,train_rows,validation_rows,test_rows
+30,96,94771,67307,10542,16922
+60,96,94591,67181,10520,16890
+90,96,94411,67055,10498,16858
+120,96,94231,66929,10476,16826

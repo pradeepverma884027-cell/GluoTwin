@@ -1,0 +1,107 @@
+﻿# Python environment and cache
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Secrets and local environment settings
+.env
+.env.*
+!.env.example
+*credentials*
+*secret*
+*token*
+
+# Large datasets and generated training outputs
+DATASET/processed/
+DATASET/cleandataset/
+training/results/
+training/results_causal/preprocessing_v2/
+training/results_causal/preprocessing_v3/
+training/results_causal/audit/
+*.joblib
+*.pkl
+*.pickle
+*.h5
+*.keras
+*.pt
+*.pth
+*.onnx
+
+# Large archives
+*.zip
+
+# Local application files
+.streamlit/secrets.toml
+.DS_Store
+Thumbs.db
+
+# Raw healthcare datasets — keep local until redistribution rights are confirmed
+DATASET/raw/
+glucose_hpc/data/
+DATASET/cleandataset/
+DATASET/processed/
+
+# Large/generated research data
+training/results/
+training/results_causal/preprocessing_v2/
+training/results_causal/preprocessing_v3/
+training/results_causal/audit/
+files/results_causal/causal_test_predictions.csv
+
+# Raw healthcare datasets — keep local until redistribution rights are confirmed
+DATASET/raw/
+glucose_hpc/data/
+DATASET/cleandataset/
+DATASET/processed/
+
+# Large/generated research data
+training/results/
+training/results_causal/preprocessing_v2/
+training/results_causal/preprocessing_v3/
+training/results_causal/audit/
+files/results_causal/causal_test_predictions.csv
+
+# Held-out predictions and generated evaluation data
+training/results_causal/*predictions*.csv
+training/results_causal/v3_model_comparison/*predictions*.csv
+training/results_corrected/*predictions*.csv
+files/results_causal/*predictions*.csv
+
+# Temporary editor files
+training/tempCodeRunnerFile.py
+
+# Detailed patient/event-level outputs: retain locally, do not publish
+training/results_causal/v3_model_comparison/056_hypo_label_episodes_focus_patients.csv
+training/results_causal/v3_model_comparison/056_hypo_label_mismatches.csv
+training/results_causal/v3_model_comparison/057_false_negatives_and_disagreements.csv
+training/results_causal/v3_model_comparison/057_focus_patient_episodes.csv
+training/results_causal/v3_model_comparison/058_focus_test_predictions_full.csv
+training/results_causal/v3_model_comparison/060_alert_classification.csv
+training/results_causal/v3_model_comparison/061_distinct_alert_episodes.csv
+training/results_causal/v3_model_comparison/061_event_alert_matching.csv
+training/results_causal/v3_model_comparison/062_distinct_alert_episodes.csv
+training/results_causal/v3_model_comparison/062_event_alert_matching.csv
+
+# Patient-level CGM analysis outputs
+training/results_causal/v3_model_comparison/052_hypo_patient_prevalence.csv
+training/results_causal/v3_model_comparison/053_hypo_per_patient_metrics.csv
+training/results_causal/v3_model_comparison/054_hypo_per_patient_metrics.csv
+training/results_causal/v3_model_comparison/055_focus_patient_error_summary.csv
+training/results_causal/v3_model_comparison/055_patient_calibration_diagnostics.csv
+training/results_causal/v3_model_comparison/056_hypo_label_patient_summary.csv
+training/results_causal/v3_model_comparison/057_focus_patient_metrics.csv
+training/results_causal/v3_model_comparison/059_target_positive_episode_results.csv
+training/results_causal/v3_model_comparison/060_actual_low_episode_lead_time.csv
+
+# Patient-level CGM macro summary
+training/results_causal/v3_model_comparison/054_hypo_patient_macro_summary.csv
+
+# Detailed patient-level results and local run metadata
+training/results_causal/v3_model_comparison/055_focus_feature_distributions.csv
+training/results_causal/v3_model_comparison/057_focus_monthly_metrics.csv
+training/results_causal/v3_model_comparison/059_episode_detection_summary.csv
+training/results_causal/v3_model_comparison/v3_run_metadata.json
+training/results_causal/v3_model_comparison/054_hypo_robustness_audit.json
+training/results_corrected/feature_causality_audit.txt

@@ -1,0 +1,7 @@
+patient_uid,model,actual_low_episodes,episodes_with_advance_warning,episodes_without_advance_warning,advance_detection_rate,median_lead_minutes,advance_warning_alerts,late_warning_alerts,unmatched_alerts,threshold
+T2DM_2072,XGB,10,10,0,1.0,30.0,20,18,44,0.2
+T2DM_2072,LGB,10,10,0,1.0,37.5,28,21,139,0.2
+T2DM_2077,XGB,28,27,1,0.9642857142857143,45.0,74,653,13,0.2
+T2DM_2077,LGB,28,27,1,0.9642857142857143,45.0,85,657,38,0.2
+T2DM_2078,XGB,1,1,0,1.0,60.0,3,1,59,0.2
+T2DM_2078,LGB,1,1,0,1.0,60.0,4,1,168,0.2
