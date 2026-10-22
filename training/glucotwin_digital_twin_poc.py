@@ -1,0 +1,496 @@
+
+from pathlib import Path
+import importlib.util
+
+import pandas as pd
+import streamlit as st
+
+BASE = Path(__file__).resolve().parent
+DATA_PATH = BASE.parent / "DATASET" / "processed" / "cgm_t1dm_t2dm_model_ready.csv"
+ENGINE_PATH = BASE / "022_glucotwin_inference_engine.py"
+
+st.set_page_config(page_title="GlucoTwin Digital Twin", layout="wide")
+st.title("GlucoTwin — Digital Twin Research Prototype")
+st.caption("Historical replay | Causal CGM forecasting | Research use only")
+
+@st.cache_data
+def load_data(path, modified):
+    df = pd.read_csv(path)
+    df["dt"] = pd.to_datetime(df["dt"], errors="coerce")
+    df["cgm_interpolated"] = pd.to_numeric(
+        df["cgm_interpolated"], errors="coerce"
+    ).fillna(1).astype(int)
+    return df.sort_values(
+        ["patient_uid", "segment_id", "dt"]
+    ).reset_index(drop=True)
+
+@st.cache_resource
+def load_engine():
+    spec = importlib.util.spec_from_file_location(
+        "glucotwin_engine", ENGINE_PATH
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.GlucoTwinInferenceEngine()
+
+if not DATA_PATH.is_file():
+    st.error(f"Dataset not found: {DATA_PATH}")
+    st.stop()
+
+df = load_data(str(DATA_PATH), DATA_PATH.stat().st_mtime)
+engine = load_engine()
+
+st.info(
+    "This is a retrospective research prototype, not a real-time CGM "
+    "connection or a clinically validated medical device. Do not use "
+    "forecasts to make treatment decisions."
+)
+
+required_meta = {"patient_uid", "segment_id", "dt", "split",
+                 "cgm_interpolated"}
+missing_meta = required_meta - set(df.columns)
+missing_features = set(engine.features) - set(df.columns)
+
+if missing_meta or missing_features:
+    st.error(
+        f"Missing metadata: {sorted(missing_meta)}; "
+        f"missing model features: {sorted(missing_features)}"
+    )
+    st.stop()
+
+
+# Synthetic EHR demo profiles — separate from CGM identities.
+EHR_PATH = Path(
+    r"C:\Users\pradeep\Desktop\gluotwinv2\synthea_setup"
+    r"\glucotwin_ehr_demo\synthetic_ehr_patient_summary.csv"
+)
+
+st.subheader("Synthetic EHR Demo Profile")
+st.caption(
+    "These are synthetic Synthea records. They are NOT linked to the "
+    "selected CGM patient and are shown for integration demonstration only."
+)
+
+if EHR_PATH.is_file():
+    ehr = pd.read_csv(EHR_PATH)
+    ehr_ids = ehr["synthetic_patient_id"].astype(str).tolist()
+    selected_ehr_id = st.selectbox("Select synthetic EHR profile", ehr_ids)
+    ehr_row = ehr[ehr["synthetic_patient_id"].astype(str) == selected_ehr_id].iloc[0]
+
+    a, b, c, d = st.columns(4)
+    a.metric("Age (years)", str(ehr_row.get("age_years", "N/A")))
+    b.metric("Condition records", int(ehr_row.get("condition_records", 0)))
+    c.metric("Observation records", int(ehr_row.get("observation_records", 0)))
+    d.metric("Medication records", int(ehr_row.get("medication_records", 0)))
+
+    st.write({
+        "Synthetic EHR ID": selected_ehr_id,
+        "Gender": str(ehr_row.get("GENDER", "N/A")),
+        "Race": str(ehr_row.get("RACE", "N/A")),
+        "Ethnicity": str(ehr_row.get("ETHNICITY", "N/A")),
+        "Marital status": (
+    "Unknown"
+    if pd.isna(ehr_row.get("MARITAL"))
+    else str(ehr_row.get("MARITAL"))),
+        "Source": "Synthea synthetic EHR",
+        "Sensor linkage": "Not linked — demo only",
+    })
+else:
+    st.warning(f"Synthetic EHR summary not found: {EHR_PATH}")
+
+
+
+# Synthetic virtual-patient fusion demo
+FUSION_MAP_PATH = Path(
+    r"C:\Users\pradeep\Desktop\gluotwinv2\synthea_setup"
+    r"\glucotwin_ehr_demo\synthetic_fusion_mapping.csv"
+)
+EHR_SUMMARY_PATH = Path(
+    r"C:\Users\pradeep\Desktop\gluotwinv2\synthea_setup"
+    r"\glucotwin_ehr_demo\synthetic_ehr_patient_summary.csv"
+)
+
+st.subheader("Synthetic Virtual-Patient Fusion Demo")
+st.warning(
+    "DEMO ONLY: EHR and CGM identities are paired arbitrarily for UI "
+    "demonstration. This is not verified clinical linkage. Forecasts use "
+    "the existing CGM model only; synthetic EHR data is not model input."
+)
+
+if FUSION_MAP_PATH.is_file() and EHR_SUMMARY_PATH.is_file():
+    fusion_map = pd.read_csv(FUSION_MAP_PATH)
+    ehr_summary = pd.read_csv(EHR_SUMMARY_PATH)
+
+    virtual_id = st.selectbox(
+        "Select virtual demo patient",
+        fusion_map["virtual_patient_id"].astype(str).tolist(),
+        key="fusion_virtual_patient",
+    )
+    link = fusion_map[
+        fusion_map["virtual_patient_id"].astype(str) == virtual_id
+    ].iloc[0]
+    ehr_match = ehr_summary[
+        ehr_summary["synthetic_patient_id"].astype(str)
+        == str(link["synthetic_ehr_id"])
+    ]
+
+    st.write({
+        "Virtual demo ID": virtual_id,
+        "Synthetic EHR ID": str(link["synthetic_ehr_id"]),
+        "CGM demo identity": str(link["cgm_patient_uid"]),
+        "Mapping type": str(link["mapping_type"]),
+        "Clinical linkage verified": False,
+    })
+
+    if not ehr_match.empty:
+        row = ehr_match.iloc[0]
+        a, b, c, d = st.columns(4)
+        a.metric("Age", str(row.get("age_years", "Unknown")))
+        b.metric("Condition records", int(row.get("condition_records", 0)))
+        c.metric("Observation records", int(row.get("observation_records", 0)))
+        d.metric("Medication records", int(row.get("medication_records", 0)))
+
+    st.caption(
+        "The virtual mapping is for demonstration only. It does not establish "
+        "that the EHR and CGM records belong to the same person."
+    )
+else:
+    st.warning("Fusion mapping or EHR summary file not found.")
+
+
+# Only held-out test rows are offered in this first prototype.
+test_df = df[df["split"].astype(str).str.lower() == "test"].copy()
+
+if test_df.empty:
+    st.error("No held-out test rows were found.")
+    st.stop()
+
+patients = sorted(test_df["patient_uid"].dropna().unique())
+patient = st.selectbox("Select held-out patient", patients)
+
+patient_rows = test_df[test_df["patient_uid"] == patient]
+segments = sorted(patient_rows["segment_id"].dropna().unique())
+segment = st.selectbox("Select patient segment", segments)
+
+segment_rows = patient_rows[
+    patient_rows["segment_id"] == segment
+].sort_values("dt")
+
+if segment_rows.empty:
+    st.warning("No rows found for this patient segment.")
+    st.stop()
+
+# Offer only timestamps with 96 verified rows in this segment.
+eligible_times = []
+
+for i in range(95, len(segment_rows)):
+    hist = segment_rows.iloc[i - 95:i + 1]
+    times = hist["dt"].diff().dropna()
+
+    if (
+        len(hist) == 96
+        and times.eq(pd.Timedelta(minutes=15)).all()
+        and hist["cgm_interpolated"].eq(0).all()
+        and hist["split"].astype(str).str.lower().eq("test").all()
+    ):
+        eligible_times.append(hist["dt"].iloc[-1])
+
+if not eligible_times:
+    st.error("No timestamps pass the 96-row history checks in this segment.")
+    st.stop()
+
+selected_time = st.selectbox(
+    "Replay timestamp",
+    [t.strftime("%Y-%m-%d %H:%M:%S") for t in eligible_times]
+)
+
+selected_dt = pd.Timestamp(selected_time)
+
+matches = df.index[
+    (df["patient_uid"] == patient)
+    & (df["segment_id"] == segment)
+    & (df["dt"] == selected_dt)
+].tolist()
+
+if len(matches) != 1:
+    st.error("Could not uniquely identify the selected row.")
+    st.stop()
+
+idx = matches[0]
+row = df.iloc[idx]
+
+# Verify the selected row and its 95 previous rows
+# within the SAME patient and segment.
+history_ok = False
+history_reason = ""
+
+hist = df[
+    (df["patient_uid"] == patient)
+    & (df["segment_id"] == segment)
+    & (df["dt"] <= selected_dt)
+].sort_values("dt").tail(96)
+
+if len(hist) < 96:
+    history_reason = (
+        f"Only {len(hist)} rows available in this segment up to "
+        f"the selected timestamp; 96 are required."
+    )
+else:
+    times = hist["dt"].diff().dropna()
+    cadence_ok = times.eq(pd.Timedelta(minutes=15)).all()
+    interpolation_ok = hist["cgm_interpolated"].eq(0).all()
+    split_ok = hist["split"].astype(str).str.lower().eq("test").all()
+    latest_is_selected = hist["dt"].iloc[-1] == selected_dt
+
+    if not latest_is_selected:
+        history_reason = "Selected timestamp is not the last history row."
+    elif not split_ok:
+        history_reason = "History contains rows outside the held-out test split."
+    elif not cadence_ok:
+        history_reason = "History contains a timestamp gap or irregular cadence."
+    elif not interpolation_ok:
+        history_reason = "History contains interpolated-status readings."
+    else:
+        history_ok = True
+
+st.subheader("Selected historical state")
+c1, c2, c3 = st.columns(3)
+c1.metric("Patient", str(patient))
+c2.metric("Timestamp", selected_dt.strftime("%d %b %Y, %H:%M"))
+c3.metric("Segment", str(segment))
+
+# cgm is normalized in this dataset; convert using artifact training statistics.
+artifact = engine.artifacts[30]
+current_cgm = float(row["cgm"]) * artifact["cgm_std"] + artifact["cgm_mean"]
+st.metric("Current CGM (converted to mg/dL)", f"{current_cgm:.1f}")
+
+if not history_ok:
+    st.error("Forecast blocked: history eligibility could not be verified.")
+    st.write(history_reason)
+    st.stop()
+
+if not st.button("Run historical forecast", type="primary"):
+    st.stop()
+
+feature_values = {name: row[name] for name in engine.features}
+
+try:
+    result = engine.predict(feature_values, history_verified=True)
+except Exception as exc:
+    st.error(f"Prediction failed safely: {exc}")
+    st.stop()
+
+
+st.subheader("Forecasts")
+forecast_rows = []
+
+for item in result["predictions"]:
+    h = item["horizon_minutes"]
+    forecast = item["prediction_mgdl"]
+    intervals = item.get("prediction_intervals", {})
+
+    record = {
+        "Horizon": f"+{h} min",
+        "Forecast (mg/dL)": round(float(forecast), 1),
+    }
+
+    for level in (80, 90):
+        interval = intervals.get(f"{level}%", {})
+
+        lower = interval.get("lower_mgdl")
+        upper = interval.get("upper_mgdl")
+
+        if lower is not None and upper is not None:
+            record[f"{level}% interval (mg/dL)"] = (
+                f"{float(lower):.1f} – {float(upper):.1f}"
+            )
+        else:
+            record[f"{level}% interval (mg/dL)"] = "Unavailable"
+
+    forecast_rows.append(record)
+
+st.dataframe(
+    pd.DataFrame(forecast_rows),
+    use_container_width=True,
+    hide_index=True,
+)
+
+st.caption(
+    "Intervals use saved conformal calibration radii. Actual coverage may "
+    "differ for new patients or distribution shifts. Research use only."
+)
+
+st.caption(
+    "Intervals use the existing saved calibration radii. They do not "
+    "guarantee coverage for new patients or distribution shifts. "
+    "Research use only."
+)
+
+
+st.divider()
+st.subheader("Historical actual vs predicted")
+
+st.caption(
+    "Actual values are read from the held-out historical dataset. "
+    "This is one replay, not a full-dataset performance evaluation."
+)
+
+comparison_rows = []
+actual_by_horizon = {30: "target_cgm_t30", 60: "target_cgm_t60"}
+
+for item in result["predictions"]:
+    horizon = int(item["horizon_minutes"])
+    forecast = float(item["prediction_mgdl"])
+    intervals = item.get("prediction_intervals", {})
+
+    # The model-ready dataset contains actual targets for +30 and +60 only.
+    if horizon not in actual_by_horizon:
+        comparison_rows.append({
+            "Horizon": f"+{horizon} min",
+            "Forecast (mg/dL)": round(forecast, 1),
+            "Actual (mg/dL)": "Not available in this dataset",
+            "Absolute error (mg/dL)": "—",
+            "Inside 80% interval": "—",
+            "Inside 90% interval": "—",
+        })
+        continue
+
+    target_col = actual_by_horizon[horizon]
+    actual_value = row.get(target_col)
+
+    if pd.isna(actual_value):
+        comparison_rows.append({
+            "Horizon": f"+{horizon} min",
+            "Forecast (mg/dL)": round(forecast, 1),
+            "Actual (mg/dL)": "Missing",
+            "Absolute error (mg/dL)": "—",
+            "Inside 80% interval": "—",
+            "Inside 90% interval": "—",
+        })
+        continue
+
+    actual = float(actual_value)
+    rec = {
+        "Horizon": f"+{horizon} min",
+        "Forecast (mg/dL)": round(forecast, 1),
+        "Actual (mg/dL)": round(actual, 1),
+        "Absolute error (mg/dL)": round(abs(actual - forecast), 1),
+    }
+
+    for level in (80, 90):
+        interval = intervals.get(f"{level}%", {})
+        lower = interval.get("lower_mgdl")
+        upper = interval.get("upper_mgdl")
+
+        rec[f"Inside {level}% interval"] = (
+            "Yes" if lower is not None and upper is not None
+            and float(lower) <= actual <= float(upper)
+            else "No" if lower is not None and upper is not None
+            else "Unavailable"
+        )
+
+    comparison_rows.append(rec)
+
+
+display_df = pd.DataFrame(comparison_rows)
+
+if "Actual (mg/dL)" in display_df.columns:
+    display_df["Actual (mg/dL)"] = (
+        display_df["Actual (mg/dL)"].astype(str)
+    )
+
+st.dataframe(
+    display_df,
+    use_container_width=True,
+    hide_index=True,
+)
+
+
+
+
+st.divider()
+st.header("Overall Model Evaluation — Held-out Test Set")
+
+st.caption(
+    "Metrics are calculated from the saved held-out test predictions. "
+    "These are retrospective research results, not clinical validation."
+)
+
+metrics_path = BASE / "results_causal" / "causal_multihorizon_metrics.csv"
+predictions_path = BASE / "results_causal" / "causal_test_predictions.csv"
+
+if metrics_path.exists() and predictions_path.exists():
+    metrics = pd.read_csv(metrics_path)
+    metrics = metrics[
+        (metrics["split"].astype(str).str.lower() == "test")
+        & (metrics["model"] == "LightGBM_CausalFiltered")
+    ].copy()
+
+    predictions = pd.read_csv(predictions_path)
+    predictions = predictions[
+        predictions["split"].astype(str).str.lower() == "test"
+    ].copy()
+
+    radii = {
+        30: {80: 15.39, 90: 22.11},
+        60: {80: 28.10, 90: 40.92},
+        90: {80: 37.61, 90: 54.62},
+        120: {80: 43.82, 90: 63.89},
+    }
+
+    predictions["r80"] = predictions["horizon_minutes"].map(
+        lambda h: radii[int(h)][80]
+    )
+    predictions["r90"] = predictions["horizon_minutes"].map(
+        lambda h: radii[int(h)][90]
+    )
+
+    predictions["inside80"] = (
+        (predictions["actual_mgdl"] >= predictions["prediction_mgdl"] - predictions["r80"])
+        & (predictions["actual_mgdl"] <= predictions["prediction_mgdl"] + predictions["r80"])
+    )
+    predictions["inside90"] = (
+        (predictions["actual_mgdl"] >= predictions["prediction_mgdl"] - predictions["r90"])
+        & (predictions["actual_mgdl"] <= predictions["prediction_mgdl"] + predictions["r90"])
+    )
+
+    coverage = predictions.groupby("horizon_minutes").agg(
+        test_examples=("actual_mgdl", "size"),
+        coverage_80_pct=("inside80", lambda x: 100 * x.mean()),
+        coverage_90_pct=("inside90", lambda x: 100 * x.mean()),
+    ).reset_index()
+
+    evaluation = metrics.merge(
+        coverage, on="horizon_minutes", how="left"
+    ).sort_values("horizon_minutes")
+
+    evaluation = evaluation.rename(columns={
+        "horizon_minutes": "Horizon (min)",
+        "rows": "Metric rows",
+        "MAE": "MAE (mg/dL)",
+        "RMSE": "RMSE (mg/dL)",
+        "R2": "R²",
+    })
+
+    st.dataframe(
+        evaluation[
+            [
+                "Horizon (min)",
+                "test_examples",
+                "MAE (mg/dL)",
+                "RMSE (mg/dL)",
+                "R²",
+                "coverage_80_pct",
+                "coverage_90_pct",
+            ]
+        ].round(3),
+        use_container_width=True,
+        hide_index=True,
+    )
+else:
+    st.warning(
+        "Saved evaluation files were not found. "
+        "Expected them in training/results_causal/."
+    )
+
+
