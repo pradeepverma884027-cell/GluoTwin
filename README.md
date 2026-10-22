@@ -16,7 +16,7 @@ Research-use disclaimer: GlucoTwin is a retrospective research and educational p
 - College / Institution: IMS ENGINEERING COLLEGE
 - Department / Programme: Computer Science and Engineering — Artificial Intelligence and Machine Learning
 - Incubator / Accelerator: Not applicable.
-- 
+
 3. Problem Statement
 Continuous glucose monitoring (CGM) produces time-series glucose readings, but a current reading alone does not show how glucose may evolve over the next several minutes or hours. Forecasts should also communicate uncertainty, and retrospective performance must not be presented as clinical proof.
 
@@ -46,7 +46,6 @@ Important boundaries
 - Model persistence: joblib and saved model artifacts where applicable
 - Synthetic EHR demonstration: Synthea-generated synthetic records
 - Version control: Git and GitHub
-Individual scripts may require additional packages. Review the relevant requirements files and script input paths before running them.
 
 6. AI / ML Model and Framework Details
 Models explored across the project include Linear Regression, Random Forest, Extra Trees, LightGBM, XGBoost and GRU. The dashboard uses saved artifacts and retrospective historical data; it does not retrain models when launched.
@@ -65,43 +64,92 @@ Prediction interval empirical coverage on the held-out test set:
 These are retrospective research metrics. They do not demonstrate prospective accuracy, clinical utility, safety, or generalisation to other cohorts. Results depend on data preparation, split strategy and evaluation protocol.
 
 7. Architecture
-Historical CGM dataset
-        |
-        v
-Historical patient / segment / timestamp selection
-        |
-        v
-Saved forecasting models + inference pipeline
-        |
-        v
-+30 / +60 / +90 / +120 minute forecasts
-        |
-        +----> 80% and 90% prediction intervals
-        |
-        +----> Held-out evaluation summary
-        |
-        v
-Streamlit research dashboard
-
-Synthetic Synthea EHR records
-        |
-        v
-Separate EHR demo panel / arbitrary virtual mapping
-        (not model input; clinical linkage unverified)
+              CGM-Based Digital Twin Research Prototype
+                              |
+                              v
+              +-------------------------------+
+              |     HISTORICAL CGM DATA       |
+              | 95,619 rows | 80 identities   |
+              |          33 features          |
+              +---------------+---------------+
+                              |
+                              v
+              +-------------------------------+
+              |   HISTORICAL STATE SELECTION  |
+              | Patient / Segment / Timestamp |
+              | Retrospective data only       |
+              +---------------+---------------+
+                              |
+                              v
+              +-------------------------------+
+              |  CAUSAL FEATURE / INFERENCE   |
+              | History eligibility checks    |
+              | Feature schema and validation |
+              +---------------+---------------+
+                              |
+                              v
+        +---------------------+---------------------+
+        |                     |                     |
+        v                     v                     v
++----------------+  +---------------------+  +----------------+
+| LINEAR         |  | TREE-BASED MODELS    |  | GRU SEQUENCE   |
+| REGRESSION     |  | XGBoost / LightGBM   |  | MODEL          |
+|                |  | Random Forest /      |  | (Explored)     |
+|                |  | Extra Trees          |  |                |
++-------+--------+  +----------+----------+  +-------+--------+
+        |                      |                     |
+        +----------------------+---------------------+
+                               |
+                               v
+              +--------------------------------+
+              | FORECAST & UNCERTAINTY LAYER   |
+              |                                |
+              | +30 / +60 / +90 / +120 minutes |
+              | 80% and 90% prediction ranges  |
+              | Saved conformal calibration    |
+              +----------------+---------------+
+                               |
+                 +-------------+-------------+
+                 |                           |
+                 v                           v
+    +--------------------------+  +--------------------------+
+    | HELD-OUT EVALUATION      |  | SYNTHETIC EHR DEMO        |
+    |                          |  |                          |
+    | MAE / RMSE / R²          |  | Demographic summaries    |
+    | Interval coverage        |  | Record-count summaries   |
+    | Retrospective results    |  | Arbitrary demo mapping   |
+    |                          |  | Not model input          |
+    | Not clinical validation  |  | Linkage unverified       |
+    +------------+-------------+  +-------------+------------+
+                 |                              |
+                 +--------------+---------------+
+                                |
+                                v
+              +--------------------------------+
+              |      STREAMLIT DASHBOARD       |
+              |                                |
+              | Historical CGM replay          |
+              | Multi-horizon forecasts        |
+              | Prediction intervals           |
+              | Evaluation table               |
+              | Separate synthetic EHR panel   |
+              +----------------+---------------+
+                               |
+                               v
+              +--------------------------------+
+              |         RESEARCH USERS         |
+              | Researchers / Developers       |
+              +--------------------------------+
+   
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
-8. Demo Video (15–20 Minutes)
+9. Demo Video (15–20 Minutes)
 Unlisted YouTube demo: https://youtu.be/nY0XYbmTmYQ
 
-9. Presentation
+10. Presentation
 Project presentation (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin-A-CGM-Based-Digital-Twin-Research-Prototype.pptx.pptx
 
-The presentation should cover the project motivation, problem statement, architecture, dataset and split, forecasting workflow, uncertainty estimates, held-out results, synthetic EHR demonstration, limitations and next steps.
 10. Open-Source License Details
-Current status: No open-source license has been specified in the current README. Until a license is chosen and a corresponding LICENSE file is included, do not assume that the repository may be reused, modified or redistributed.
-
 License: https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/LICENSE
-
-Third-party datasets, model artifacts, libraries and synthetic-data tooling may have their own terms. Check those terms separately before redistribution.
 
 11. Repository Structure
 - training/ — training, evaluation, inference, dashboard and audit scripts.
@@ -111,7 +159,8 @@ Third-party datasets, model artifacts, libraries and synthetic-data tooling may 
 - README_START_HERE.md — additional setup instructions.
 - add_ehr_panel.py, add_fusion_panel.py — EHR/fusion demo helper scripts.
 - pect_event_records.py — event-record extraction / processing script.
-Raw datasets, patient-level records and trained model artifacts are not included in every checkout. Obtain authorized access to required data and artifacts before running scripts that depend on them. Do not publish patient identifiers, private health records, credentials or private local paths.
+- license
+- pptx
 
 12. Setup and Running the Dashboard (Windows)
 From the repository root:
