@@ -88,11 +88,10 @@ Synthetic Synthea EHR records
         v
 Separate EHR demo panel / arbitrary virtual mapping
         (not model input; clinical linkage unverified)
-Architecture diagram (PDF/PPT): [UPLOAD THE ARCHITECTURE DIAGRAM TO THIS REPOSITORY AND ADD ITS LINK HERE]
+Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
 8. Demo Video (15–20 Minutes)
 Unlisted YouTube demo: https://youtu.be/nY0XYbmTmYQ
 
-The recording should demonstrate the dashboard, historical replay, multi-horizon forecasts, uncertainty intervals, held-out evaluation and the separate synthetic EHR panel. Clearly state that the system is retrospective and not clinically validated.
 9. Presentation
 Project presentation (PDF/PPT): [UPLOAD THE FINAL PRESENTATION AND ADD ITS REPOSITORY LINK HERE]
 
