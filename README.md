@@ -99,9 +99,10 @@ The presentation should cover the project motivation, problem statement, archite
 10. Open-Source License Details
 Current status: No open-source license has been specified in the current README. Until a license is chosen and a corresponding LICENSE file is included, do not assume that the repository may be reused, modified or redistributed.
 
-License: [SELECT AN APPROPRIATE LICENSE AND ADD THE LICENSE FILE AFTER CONFIRMING RIGHTS TO LICENSE ALL INCLUDED CONTENT]
+License: https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/LICENSE
 
 Third-party datasets, model artifacts, libraries and synthetic-data tooling may have their own terms. Check those terms separately before redistribution.
+
 11. Repository Structure
 - training/ — training, evaluation, inference, dashboard and audit scripts.
 - files/ — shared preprocessing and model-training helpers.
