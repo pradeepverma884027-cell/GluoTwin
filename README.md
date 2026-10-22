@@ -93,7 +93,7 @@ Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoT
 Unlisted YouTube demo: https://youtu.be/nY0XYbmTmYQ
 
 9. Presentation
-Project presentation (PDF/PPT): [UPLOAD THE FINAL PRESENTATION AND ADD ITS REPOSITORY LINK HERE]
+Project presentation (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin-A-CGM-Based-Digital-Twin-Research-Prototype.pptx.pptx
 
 The presentation should cover the project motivation, problem statement, architecture, dataset and split, forecasting workflow, uncertainty estimates, held-out results, synthetic EHR demonstration, limitations and next steps.
 10. Open-Source License Details
@@ -111,6 +111,7 @@ Third-party datasets, model artifacts, libraries and synthetic-data tooling may 
 - add_ehr_panel.py, add_fusion_panel.py — EHR/fusion demo helper scripts.
 - pect_event_records.py — event-record extraction / processing script.
 Raw datasets, patient-level records and trained model artifacts are not included in every checkout. Obtain authorized access to required data and artifacts before running scripts that depend on them. Do not publish patient identifiers, private health records, credentials or private local paths.
+
 12. Setup and Running the Dashboard (Windows)
 From the repository root:
 python -m venv .venv
@@ -122,21 +123,9 @@ Additional dependencies may be required by the selected model or script, includi
 Run the digital-twin proof-of-concept dashboard from the directory containing the expected project data and artifacts:
 python -m streamlit run training\glucotwin_digital_twin_poc.py
 Some scripts use project-specific relative paths and require prepared datasets or previously generated artifacts. Review their source and input requirements before execution. The dashboard should not be assumed to work from an arbitrary directory without the expected data layout.
-13. Submission Requirements Checklist
-Before submitting, confirm that each required item is present in this README and that every linked resource opens without login or special permission:
-- [ ] Team details completed.
-- [ ] Official college / incubator information completed.
-- [x] Project title included.
-- [x] Problem statement included.
-- [x] Healthcare use case included.
-- [x] Technical stack included.
-- [x] AI/ML model and framework details included.
-- [ ] 15–20 minute unlisted YouTube demo uploaded and linked.
-- [ ] Open-source license selected and LICENSE file added.
-- [ ] Architecture diagram PDF/PPT uploaded and linked.
-- [ ] Final project presentation PDF/PPT uploaded and linked.
-- [ ] All required files and links confirmed publicly accessible without additional permissions.
-14. Limitations and Future Work
+
+13. Limitations and Future Work
 Current limitations include retrospective-only evaluation, no live CGM connection, no clinical validation, no verified EHR-to-CGM linkage and no EHR features supplied to the forecasting model. Future work may include evaluation on independent cohorts, subgroup analysis, improved uncertainty calibration, verified and consented linkage, and carefully validated real-time integration.
+
 15. Responsible Use
 CGM and EHR data can be sensitive health information. Confirm data permissions before sharing datasets. Keep patient-level records, identifiers, credentials, access tokens and private local paths out of the public repository. Synthetic EHR examples are not real patient records and do not establish a clinical relationship to any CGM identity.
