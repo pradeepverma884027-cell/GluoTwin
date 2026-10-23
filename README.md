@@ -90,6 +90,8 @@ These are retrospective research metrics. They do not demonstrate prospective ac
               +--------------------+-----------------+
                                    |
                                    v
+                                   |
+                                   v
         +--------------------------+--------------------------+
         |                          |                          |
         v                          v                          v
@@ -104,7 +106,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
                                      |
                                      v
               +--------------------------------------+
-              |      FORECAST & UNCERTAINTY          |
+              |       FORECAST & UNCERTAINTY         |
               |  +30 / +60 / +90 / +120 minutes      |
               |  80% and 90% prediction intervals   |
               |  Saved conformal calibration        |
@@ -139,7 +141,6 @@ These are retrospective research metrics. They do not demonstrate prospective ac
               |             RESEARCH USERS           |
               |  Researchers / Developers            |
               +--------------------------------------+
-
 
 
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
