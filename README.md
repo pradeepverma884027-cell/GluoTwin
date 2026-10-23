@@ -143,7 +143,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
    
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
 9. Demo Video (15–20 Minutes)
-Unlisted YouTube demo: https://youtu.be/nY0XYbmTmYQ
+Unlisted YouTube demo: https://youtu.be/h2WaNIVhzXo
 
 10. Presentation
 Project presentation (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin-A-CGM-Based-Digital-Twin-Research-Prototype.pptx.pptx
