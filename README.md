@@ -64,81 +64,84 @@ Prediction interval empirical coverage on the held-out test set:
 These are retrospective research metrics. They do not demonstrate prospective accuracy, clinical utility, safety, or generalisation to other cohorts. Results depend on data preparation, split strategy and evaluation protocol.
 
 7. Architecture
-                     GLUCOTWIN SYSTEM ARCHITECTURE
-               CGM-Based Digital Twin Research Prototype
+           GLUCOTWIN SYSTEM ARCHITECTURE
+          
 
-              +-----------------------------------------+
-              |           HISTORICAL CGM DATA           |
-              | 95,619 rows | 80 unique CGM identities  |
-              | 33 prepared features                    |
-              | Train 67,532 | Val 10,713 | Test 17,374 |
-              +--------------------+--------------------+
-                                   |
-                                   v
-              +-----------------------------------------+
-              |       HISTORICAL STATE SELECTION        |
-              | Patient / Segment / Timestamp           |
-              | Retrospective data only                 |
-              +--------------------+--------------------+
-                                   |
-                                   v
-              +-----------------------------------------+
-              |       CAUSAL FEATURE / INFERENCE        |
-              | History eligibility checks              |
-              | Feature schema and validation           |
-              +--------------------+--------------------+
-                                   |
-                                   v
-        Loaded from saved artifacts (no retraining at launch)
-           +-----------------------+-----------------------+
-           |                       |                       |
-           v                       v                       v
-+--------------------+  +--------------------+  +--------------------+
-| LINEAR REGRESSION  |  | TREE-BASED MODELS  |  | GRU SEQUENCE MODEL |
-| Baseline           |  | XGBoost / LightGBM |  | Explored           |
-|                    |  | Random Forest /    |  |                    |
-|                    |  | Extra Trees        |  |                    |
-+---------+----------+  +---------+----------+  +---------+----------+
-          |                       |                       |
-          +-----------------------+-----------------------+
-                                  |
-                                  v
-              +-----------------------------------------+
-              |         FORECAST & UNCERTAINTY          |
-              | +30 / +60 / +90 / +120 minutes          |
-              | 80% and 90% prediction intervals        |
-              | Saved conformal calibration radii       |
-              +--------------------+--------------------+
-                                   |
-                +------------------+
-                |                    (independent of models)
-                v                  
-+---------------+------------------+  +--------------------------------+
-|       HELD-OUT EVALUATION        |  |       SYNTHETIC EHR DEMO       |
-| MAE / RMSE / R-squared           |  | Synthea-generated records      |
-| Interval coverage                |  | Demographic / record counts    |
-| Retrospective results only       |  | Not model input                |
-| Not clinical validation          |  | Clinical linkage unverified    |
-+---------------+------------------+  +----------------+---------------+
-                |                                      |
-                +------------------+-------------------+
-                                   |
-                                   v
-              +-----------------------------------------+
-              |           STREAMLIT DASHBOARD           |
-              | Historical CGM replay                   |
-              | Multi-horizon forecasts + intervals     |
-              | Evaluation table                        |
-              | Separate synthetic EHR panel            |
-              +--------------------+--------------------+
-                                   |
-                                   v
-              +-----------------------------------------+
-              |              RESEARCH USERS             |
-              | Researchers / Developers                |
-              +-----------------------------------------+
+   A. OFFLINE TRAINING & EVALUATION (training/) 
 
+  +--------------------------------------------------------+
+  | PREPARED CGM DATASET (cgm_t1dm_t2dm)                   |
+  | 95,619 rows | 80 CGM identities | 33 features          |
+  | Fixed splits: Train 67,532 | Val 10,713 | Test 17,374  |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | MODEL TRAINING SCRIPTS (one model per run)             |
+  | 01 Linear | 02 Random Forest | 03 Extra Trees          |
+  | 04 LightGBM | 05 XGBoost | GRU (explored, separate)    |
+  | Fit on train; model selection on validation            |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | SAVED ARTIFACTS                                        |
+  | Models: training/results/models/*.joblib               |
+  | Metrics: training/results/*.csv                        |
+  | Conformal radii: 80% and 90% intervals                 |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | HELD-OUT TEST EVALUATION (+30/+60/+90/+120 min)        |
+  | MAE / RMSE / R-squared | interval coverage             |
+  | Retrospective only - not clinical validation           |
+  +--------------------------------------------------------+
 
+   B. DASHBOARD RUNTIME (no retraining at launch) 
+
+  +--------------------------------------------------------+
+  | HISTORICAL STATE SELECTION                             |
+  | Patient / Segment / Timestamp (replay, no live CGM)    |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | CAUSAL FEATURE BUILD + VALIDATION                      |
+  | History eligibility checks | feature schema check      |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | INFERENCE (loads saved .joblib artifacts)              |
+  | <-- Saved Artifacts from lane A                        |
+  | Forecast at +30 / +60 / +90 / +120 minutes             |
+  | 80% and 90% prediction intervals (saved radii)         |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | STREAMLIT DASHBOARD                                    |
+  | CGM replay | multi-horizon forecasts + intervals       |
+  | Evaluation table (from lane A metrics)                 |
+  | Separate synthetic EHR panel (see C)                   |
+  +--------------------------------------------------------+
+                               |
+                               v
+  +--------------------------------------------------------+
+  | RESEARCH USERS                                         |
+  | Researchers / Developers                               |
+  +--------------------------------------------------------+
+
+   C. SYNTHETIC EHR DEMO (isolated side path) 
+
+  +--------------------------------------------------------+
+  | SYNTHEA SYNTHETIC RECORDS                              |
+  | Demographic + record-count summaries only              |
+  | NOT model input | EHR-to-CGM mapping is arbitrary      |
+  | Clinical linkage unverified                            |
+  +--------------------------------------------------------+
+  
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
 
 9. Demo Video (15–20 Minutes)
