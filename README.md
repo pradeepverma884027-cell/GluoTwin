@@ -64,10 +64,12 @@ Prediction interval empirical coverage on the held-out test set:
 These are retrospective research metrics. They do not demonstrate prospective accuracy, clinical utility, safety, or generalisation to other cohorts. Results depend on data preparation, split strategy and evaluation protocol.
 
 7. Architecture
-           GLUCOTWIN SYSTEM ARCHITECTURE
-          
+## 7. Architecture
 
-   A. OFFLINE TRAINING & EVALUATION (training/) 
+**GLUCOTWIN SYSTEM ARCHITECTURE: CGM-Based Digital Twin Research Prototype**
+
+```text
+== A. OFFLINE TRAINING & EVALUATION (training/) ==
 
   +--------------------------------------------------------+
   | PREPARED CGM DATASET (cgm_t1dm_t2dm)                   |
@@ -86,8 +88,8 @@ These are retrospective research metrics. They do not demonstrate prospective ac
                                v
   +--------------------------------------------------------+
   | SAVED ARTIFACTS                                        |
-  | Models: training/results/models/*.joblib               |
-  | Metrics: training/results/*.csv                        |
+  | Models: training/results/models/<model>.joblib         |
+  | Metrics: see training/results/ (CSV per model)         |
   | Conformal radii: 80% and 90% intervals                 |
   +--------------------------------------------------------+
                                |
@@ -98,7 +100,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
   | Retrospective only - not clinical validation           |
   +--------------------------------------------------------+
 
-   B. DASHBOARD RUNTIME (no retraining at launch) 
+== B. DASHBOARD RUNTIME (no retraining at launch) ==
 
   +--------------------------------------------------------+
   | HISTORICAL STATE SELECTION                             |
@@ -133,7 +135,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
   | Researchers / Developers                               |
   +--------------------------------------------------------+
 
-   C. SYNTHETIC EHR DEMO (isolated side path) 
+== C. SYNTHETIC EHR DEMO (isolated side path) ==
 
   +--------------------------------------------------------+
   | SYNTHEA SYNTHETIC RECORDS                              |
@@ -141,8 +143,10 @@ These are retrospective research metrics. They do not demonstrate prospective ac
   | NOT model input | EHR-to-CGM mapping is arbitrary      |
   | Clinical linkage unverified                            |
   +--------------------------------------------------------+
-  
-Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
+   - - - - - - - -> shown in dashboard EHR panel only
+```
+
+Architecture diagram (PDF/PPT): [GlucoTwin_Architecture_Improved.pdf](https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf)
 
 9. Demo Video (15–20 Minutes)
 Unlisted YouTube demo: https://youtu.be/h2WaNIVhzXo
