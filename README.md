@@ -64,7 +64,8 @@ Prediction interval empirical coverage on the held-out test set:
 These are retrospective research metrics. They do not demonstrate prospective accuracy, clinical utility, safety, or generalisation to other cohorts. Results depend on data preparation, split strategy and evaluation protocol.
 
 7. Architecture
-                               GLUCOTWIN SYSTEM ARCHITECTURE
+
+                    GLUCOTWIN SYSTEM ARCHITECTURE
              CGM-Based Digital Twin Research Prototype
                                   |
                                   v
