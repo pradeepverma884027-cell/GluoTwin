@@ -65,7 +65,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
 
 7. Architecture
 
-   ```text   GLUCOTWIN SYSTEM ARCHITECTURE
+               GLUCOTWIN SYSTEM ARCHITECTURE
              CGM-Based Digital Twin Research Prototype
                                   |
                                   v
@@ -141,7 +141,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
               +--------------------------------------+
 
 
-```
+
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
 
 9. Demo Video (15–20 Minutes)
