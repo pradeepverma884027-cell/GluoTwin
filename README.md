@@ -65,7 +65,7 @@ These are retrospective research metrics. They do not demonstrate prospective ac
 
 7. Architecture
 
-                    GLUCOTWIN SYSTEM ARCHITECTURE
+   ```text   GLUCOTWIN SYSTEM ARCHITECTURE
              CGM-Based Digital Twin Research Prototype
                                   |
                                   v
@@ -140,9 +140,8 @@ These are retrospective research metrics. They do not demonstrate prospective ac
               |  Researchers / Developers            |
               +--------------------------------------+
 
-LIMITATIONS: Retrospective only; no live CGM connection; not clinically
-validated. Synthetic EHR-to-CGM mapping is arbitrary and not clinically
-verified. EHR information is not used as a forecasting-model input.
+
+```
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
 
 9. Demo Video (15–20 Minutes)
