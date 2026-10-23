@@ -64,83 +64,79 @@ Prediction interval empirical coverage on the held-out test set:
 These are retrospective research metrics. They do not demonstrate prospective accuracy, clinical utility, safety, or generalisation to other cohorts. Results depend on data preparation, split strategy and evaluation protocol.
 
 7. Architecture
+                     GLUCOTWIN SYSTEM ARCHITECTURE
+               CGM-Based Digital Twin Research Prototype
 
-               GLUCOTWIN SYSTEM ARCHITECTURE
-             CGM-Based Digital Twin Research Prototype
+              +-----------------------------------------+
+              |           HISTORICAL CGM DATA           |
+              | 95,619 rows | 80 unique CGM identities  |
+              | 33 prepared features                    |
+              | Train 67,532 | Val 10,713 | Test 17,374 |
+              +--------------------+--------------------+
+                                   |
+                                   v
+              +-----------------------------------------+
+              |       HISTORICAL STATE SELECTION        |
+              | Patient / Segment / Timestamp           |
+              | Retrospective data only                 |
+              +--------------------+--------------------+
+                                   |
+                                   v
+              +-----------------------------------------+
+              |       CAUSAL FEATURE / INFERENCE        |
+              | History eligibility checks              |
+              | Feature schema and validation           |
+              +--------------------+--------------------+
+                                   |
+                                   v
+        Loaded from saved artifacts (no retraining at launch)
+           +-----------------------+-----------------------+
+           |                       |                       |
+           v                       v                       v
++--------------------+  +--------------------+  +--------------------+
+| LINEAR REGRESSION  |  | TREE-BASED MODELS  |  | GRU SEQUENCE MODEL |
+| Baseline           |  | XGBoost / LightGBM |  | Explored           |
+|                    |  | Random Forest /    |  |                    |
+|                    |  | Extra Trees        |  |                    |
++---------+----------+  +---------+----------+  +---------+----------+
+          |                       |                       |
+          +-----------------------+-----------------------+
                                   |
                                   v
-              +--------------------------------------+
-              |          HISTORICAL CGM DATA         |
-              |  95,619 rows | 80 identities         |
-              |  33 prepared features                |
-              +--------------------+-----------------+
+              +-----------------------------------------+
+              |         FORECAST & UNCERTAINTY          |
+              | +30 / +60 / +90 / +120 minutes          |
+              | 80% and 90% prediction intervals        |
+              | Saved conformal calibration radii       |
+              +--------------------+--------------------+
+                                   |
+                +------------------+
+                |                    (independent of models)
+                v                  
++---------------+------------------+  +--------------------------------+
+|       HELD-OUT EVALUATION        |  |       SYNTHETIC EHR DEMO       |
+| MAE / RMSE / R-squared           |  | Synthea-generated records      |
+| Interval coverage                |  | Demographic / record counts    |
+| Retrospective results only       |  | Not model input                |
+| Not clinical validation          |  | Clinical linkage unverified    |
++---------------+------------------+  +----------------+---------------+
+                |                                      |
+                +------------------+-------------------+
                                    |
                                    v
-              +--------------------------------------+
-              |      HISTORICAL STATE SELECTION      |
-              |  Patient / Segment / Timestamp       |
-              |  Retrospective data only             |
-              +--------------------+-----------------+
+              +-----------------------------------------+
+              |           STREAMLIT DASHBOARD           |
+              | Historical CGM replay                   |
+              | Multi-horizon forecasts + intervals     |
+              | Evaluation table                        |
+              | Separate synthetic EHR panel            |
+              +--------------------+--------------------+
                                    |
                                    v
-              +--------------------------------------+
-              |    CAUSAL FEATURE / INFERENCE        |
-              |  History eligibility checks          |
-              |  Feature schema and validation       |
-              +--------------------+-----------------+
-                                   |
-                                   v
-                                   |
-                                   v
-        +--------------------------+--------------------------+
-        |                          |                          |
-        v                          v                          v
-+--------------------+   +----------------------+   +--------------------+
-| LINEAR REGRESSION  |   | TREE-BASED MODELS    |   | GRU SEQUENCE MODEL |
-| Baseline           |   | XGBoost / LightGBM   |   | Explored           |
-|                    |   | Random Forest /      |   |                    |
-|                    |   | Extra Trees          |   |                    |
-+----------+---------+   +----------+-----------+   +----------+---------+
-           |                         |                          |
-           +-------------------------+--------------------------+
-                                     |
-                                     v
-              +--------------------------------------+
-              |       FORECAST & UNCERTAINTY         |
-              |  +30 / +60 / +90 / +120 minutes      |
-              |  80% and 90% prediction intervals   |
-              |  Saved conformal calibration        |
-              +--------------------+-----------------+
-                                   |
-                     +-------------+-------------+
-                     |                           |
-                     v                           v
-       +---------------------------+  +---------------------------+
-       | HELD-OUT EVALUATION       |  | SYNTHETIC EHR DEMO         |
-       | MAE / RMSE / R-squared    |  | Demographic summaries     |
-       | Interval coverage         |  | Record-count summaries    |
-       | Retrospective results     |  | Arbitrary demo mapping    |
-       | Not clinical validation   |  | Not model input           |
-       |                           |  | Clinical linkage unverified|
-       +-------------+-------------+  +-------------+-------------+
-                     |                              |
-                     +--------------+---------------+
-                                    |
-                                    v
-              +--------------------------------------+
-              |         STREAMLIT DASHBOARD          |
-              |  Historical CGM replay               |
-              |  Multi-horizon forecasts             |
-              |  Prediction intervals                |
-              |  Evaluation table                    |
-              |  Separate synthetic EHR panel        |
-              +--------------------+-----------------+
-                                   |
-                                   v
-              +--------------------------------------+
-              |             RESEARCH USERS           |
-              |  Researchers / Developers            |
-              +--------------------------------------+
+              +-----------------------------------------+
+              |              RESEARCH USERS             |
+              | Researchers / Developers                |
+              +-----------------------------------------+
 
 
 Architecture diagram (PDF/PPT): https://github.com/pradeepverma884027-cell/GluoTwin/blob/main/GlucoTwin_Architecture_Improved.pdf
